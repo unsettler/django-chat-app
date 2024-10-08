@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Add viewport for responsiveness -->
+    <title>Sign Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .alert {
+            color: red; /* Style for error messages */
+        }
+    </style>
+</head>
+<body>
+    <h1>Sign Up</h1> <!-- Add a heading for clarity -->
+
+    <form method="post" action="{% url 'signupurl' %}"> <!-- Ensure correct URL name -->
+        {% csrf_token %}
+        {{ signformtohtml.as_p }} <!-- Render the form fields -->
+        <button type="submit">Sign Up</button> <!-- Button for form submission -->
+    </form>
+
+    {% if msg %}
+        <div class="alert">{{ msg }}</div> <!-- Display the message if present -->
+    {% endif %}
+
+    <p>Already have an account? <a href="{% url 'loginurl' %}">Login here</a></p> <!-- Link to login page -->
+</body>
+</html>
