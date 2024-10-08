@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,26 +7,37 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            background-image: url("{% static 'images/loginbg.jpg' %}");
+            background-size: cover; /* Cover the entire screen */
+            background-position: center; /* Center the background image */
             text-align: center;
+            height: 100vh; /* Full height of the viewport */
+            margin: 0; /* Remove default margin */
         }
 
-        h1 {
-            color: #333;
+          h1 {
+        color: white;
         }
 
         form {
-            display: inline-block;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex; /* Use flexbox for better alignment */
+            flex-direction: column; /* Align children in a column */
+            align-items: center; /* Center items horizontally */
+            justify-content: center; /* Center items vertically if height is set */
+            background-color: rgba(255, 255, 255, 0.3); /* Semi-transparent white */
+            padding: 40px; /* Space inside the container */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            max-width: 400px; /* Max width for responsiveness */
+            margin: 50px auto; /* Center the container horizontally with auto margins */
         }
 
-        .form-group {
-            margin-bottom: 15px;
+        .form-inputs {
+            margin-bottom: 20px;
             text-align: left;
         }
+
+
 
         label {
             display: block;
@@ -77,13 +89,13 @@
     {% csrf_token %}
 
     <div class="form-inputs">
-        <label for="{{ form2.username.id_for_label }}">{{ form2.username.label }}</label>
-        {{ form2.username }}
+        <label for="{{ form2.username1.id_for_label }}">{{ form2.username1.label }}</label>
+        {{ form2.username1 }}
     </div>
 
     <div class="form-inputs">
-        <label for="{{ form2.password.id_for_label }}">{{ form2.password.label }}</label>
-        {{ form2.password }}
+        <label for="{{ form2.password1.id_for_label }}">{{ form2.password1.label }}</label>
+        {{ form2.password1 }}
     </div>
 
     <button type="submit">Login</button>
@@ -91,8 +103,9 @@
     <div class="message">{{ msg }}</div>
 </form>
 
+<br>
 <a href="{% url 'signupurl' %}">Sign Up</a>
 <a href="{% url 'toreseturl' %}">Reset Password</a>
-
+</br>
 </body>
 </html>

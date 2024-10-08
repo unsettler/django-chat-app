@@ -3,13 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>login</title>
+    <style>
+ body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+         .search-bar {
+            margin: 20px 0;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+         .header h1 {
+            margin: 0;
+
+
+
+
+
+    </style>
 </head>
 <body>
-<h1>helllo hi </h1>
- <form method="post" action="{% url 'logouturl' %}" >
-    {% csrf_token %}
-    <button type="submit">logout</button>
+<h1>Welcome, {{ current_user }}!</h1>
+ <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="{{ form.profile_picture.id_for_label }}">{{ form.profile_picture.label }}</label>
+        {{ form.profile_picture }}
+        <button type="submit">Upload</button>
+    </form>
 
-</form>
+ <div class="search-bar">
+        <input type="text" id="userSearch" placeholder="Search for users...">
+    </div>
+
+<br>
+ <p><a href="{% url 'logouturl' %}">Logout</a></p>
+</br>
+
 </body>
 </html>
+
+
+

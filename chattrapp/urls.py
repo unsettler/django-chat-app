@@ -8,5 +8,6 @@ urlpatterns = [
     path('accounts/signup', views.signup_view, name="signupurl"),
     path('resetpassword', views.resetPassword_view, name="reseturl"),
     path('toreset', views.toreset_view, name="toreseturl"),
+    # path('profileupload', views.profileupload_view, name="profileuploadurl"),
 
 ]

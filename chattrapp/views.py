@@ -4,11 +4,12 @@ from django.contrib.auth.decorators import login_required
 from .forms import loginform
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+# from .forms import CustomUserCreationForm
 
 
-@login_required()
+@login_required
 def home_view(request):
-    return render(request, "homehtml.html")
+    return render(request, "homehtml.html", {'current_user': request.user.username})
 
 
 def login_view(request):
@@ -26,7 +27,8 @@ def login_view(request):
                 login(request, user)
                 return redirect("homeurl")
             else:
-                return render(request, "registration/login.html", {"form2": form1})
+
+                return render(request, "registration/login.html", {"form2": form1, "msg": "invalid login"})
     else:
         form1 = loginform()
 
@@ -47,15 +49,15 @@ def signup_view(request):
                 signupform.save()
                 return redirect("loginurl")
             else:
-                return render(request, "signuphtml.html", {"signformtohtml": signupform, "msg": "invalid login"})
+                return render(request, "signuphtml.html", {"signformtohtml": signupform, "msg": "invalid details"})
 
         else:
             signupform = UserCreationForm()
-            return render(request, "signuphtml.html", {"signformtohtml": signupform, "msg": "invalid submission"})
+            return render(request, "signuphtml.html", {"signformtohtml": signupform})
     except Exception as e:
         print(e)
         signupform = UserCreationForm()
-        return render(request, "signuphtml.html", {"signformtohtml": signupform})
+    return render(request, "signuphtml.html", {"signformtohtml": signupform})
 
 
 def toreset_view(request):
@@ -77,3 +79,17 @@ def resetPassword_view(request):
     except Exception as e:
         print(e)
         return render(request, "resethtml.html", {"msg": "password reset failed"})
+
+
+# def profileupload_view(request):
+#     if request.method == 'POST':
+#         form = CustomUserCreationForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             user = request.user  # Get the currently logged-in user
+#             user.profile_picture = form.cleaned_data['profile_picture']
+#             user.save()  # Save the user instance with the new image
+#             return render(request, 'homehtml.html', {'msg': "upload succesfull"})
+#     else:
+#         form = CustomUserCreationForm()
+#
+#     return render(request, 'homehtml.html', {'form': form})
