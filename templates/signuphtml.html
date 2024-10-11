@@ -110,9 +110,7 @@
         <button type="submit">Sign Up</button> <!-- Button for form submission -->
     </form>
 
-    {% if msg %}
         <div class="alert">{{ msg }}</div> <!-- Display the message if present -->
-    {% endif %}
 
     <p>Already have an account? <a href="{% url 'loginurl' %}">Login here</a></p> <!-- Link to login page -->
 </body>

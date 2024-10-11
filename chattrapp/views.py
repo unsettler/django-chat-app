@@ -4,10 +4,15 @@ from django.contrib.auth.decorators import login_required
 from .forms import loginform
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-# from .forms import CustomUserCreationForm
+# from .forms import Profilepictureform
+from .forms import CustomUserCreationForm
+from .models import CustomUsercreated
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
-@login_required
+@login_required()
 def home_view(request):
     return render(request, "homehtml.html", {'current_user': request.user.username})
 
@@ -44,7 +49,7 @@ def signup_view(request):
     try:
 
         if request.method == "POST":
-            signupform = UserCreationForm(request.POST)
+            signupform = CustomUserCreationForm(request.POST)
             if signupform.is_valid():
                 signupform.save()
                 return redirect("loginurl")
@@ -52,12 +57,12 @@ def signup_view(request):
                 return render(request, "signuphtml.html", {"signformtohtml": signupform, "msg": "invalid details"})
 
         else:
-            signupform = UserCreationForm()
-            return render(request, "signuphtml.html", {"signformtohtml": signupform})
+            signupform = CustomUserCreationForm()
+            return render(request, "signuphtml.html", {"signformtohtml": signupform, "msg": "post method failed"})
     except Exception as e:
         print(e)
-        signupform = UserCreationForm()
-    return render(request, "signuphtml.html", {"signformtohtml": signupform})
+        signupform = CustomUserCreationForm()
+    return render(request, "signuphtml.html", {"signformtohtml": signupform, "msg": "raised an error"})
 
 
 def toreset_view(request):
@@ -81,15 +86,35 @@ def resetPassword_view(request):
         return render(request, "resethtml.html", {"msg": "password reset failed"})
 
 
-# def profileupload_view(request):
-#     if request.method == 'POST':
-#         form = CustomUserCreationForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             user = request.user  # Get the currently logged-in user
-#             user.profile_picture = form.cleaned_data['profile_picture']
-#             user.save()  # Save the user instance with the new image
-#             return render(request, 'homehtml.html', {'msg': "upload succesfull"})
-#     else:
-#         form = CustomUserCreationForm()
-#
-#     return render(request, 'homehtml.html', {'form': form})
+def profileupload_view(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            # user = request.user  # Get the currently logged-in user
+            # user.profile_picture = form.cleaned_data['profile_picture']
+            # user.save()  # Save the user instance with the new image
+            form.save()
+            return render(request, 'homehtml.html', {'msg': "upload succesfull"})
+        else:
+            form = CustomUserCreationForm(instance=request.user)
+            return render(request, 'homehtml.html', {'form': form, "msg": "invalid details"})
+    form = CustomUserCreationForm(instance=request.user)
+    return render(request, 'homehtml.html', {'form': form, "msg": "post failed"})
+
+
+def search_view(request):
+    if request.method == "POST":
+
+        searchedusername = request.POST.get('searchname')
+        userreturned = User.objects.filter(username=searchedusername)
+        if userreturned.exists():
+            return render(request, 'homehtml.html', {"username ": userreturned.first().username})
+        else:
+            return display(request)
+    else:
+        return render(request, 'homehtml.html', {"msg": "No records found"})
+
+
+def display(request):
+    users = CustomUsercreated.objects.all()
+    return render(request, "homehtml.html", {'users': users})

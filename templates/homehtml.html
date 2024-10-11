@@ -33,15 +33,31 @@
 </head>
 <body>
 <h1>Welcome, {{ current_user }}!</h1>
- <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="{{ form.profile_picture.id_for_label }}">{{ form.profile_picture.label }}</label>
-        {{ form.profile_picture }}
-        <button type="submit">Upload</button>
-    </form>
+ <form method="POST" enctype="multipart/form-data" action ="{% url 'profileuploadurl' %}">
+    {% csrf_token %}
 
+<!--   <label for="{{ form.profile_picture.id_for_label }}">{{ form.profile_picture.label }}</label>-->
+<!--    {{ form.profile_picture }}-->
+     {{ form.as_p }}
+    <button type="submit">Upload</button>
+</form>
+
+ {{ msg }}
  <div class="search-bar">
-        <input type="text" id="userSearch" placeholder="Search for users...">
+     <form method="POST"  action ="{% url 'searchurl' %}">
+             {% csrf_token %}
+            <input type="text" id="userSearch" name="searchname" placeholder="Search for users...">
+    <button type="submit">search</button>
+</form>
+
+<p>{{username}}</p>
+<p>{{users}}</p>
+
+
+
+
+
+
     </div>
 
 <br>

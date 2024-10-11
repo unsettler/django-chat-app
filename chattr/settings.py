@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'chattr.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'db1',
+        'NAME': 'chattr',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost'
@@ -130,6 +130,6 @@ LOGIN_REDIRECT_URL = "homeurl"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# AUTH_USER_MODEL = 'chattrapp.CustomUsercreated'
+AUTH_USER_MODEL = 'chattrapp.CustomUsercreated'
 MEDIA_URL = '/images/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
