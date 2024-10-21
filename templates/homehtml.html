@@ -2,70 +2,183 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>login</title>
+    <title>Login</title>
     <style>
- body {
+        body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
-            padding: 0;
+            padding: 20px;
         }
 
-         .search-bar {
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
             margin: 20px 0;
         }
-        .search-bar input {
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"],
+        input[type="text"],
+        button {
             width: 100%;
             padding: 10px;
             font-size: 16px;
+            margin-bottom: 20px;
             border: 1px solid #ddd;
             border-radius: 5px;
         }
 
-         .header h1 {
-            margin: 0;
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
 
+        button:hover {
+            background-color: #218838;
+        }
 
+        .search-bar {
+            margin: 20px 0;
+        }
 
+        .search-bar input {
+            width: calc(100% - 100px);
+            display: inline-block;
+            margin-right: 10px;
+        }
 
+        .search-bar button {
+            width: 90px;
+            display: inline-block;
+            background-color: #007bff;
+        }
 
+        .search-bar button:hover {
+            background-color: #0056b3;
+        }
+
+        .profile-picture {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .profile-picture img {
+            border-radius: 50%;
+            border: 2px solid #ddd;
+        }
+
+        .user-list {
+            margin: 20px 0;
+            padding: 0;
+            list-style-type: none;
+        }
+
+        .user-list li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .user-list button {
+            float: right;
+            background-color: #007bff;
+        }
+
+        .user-list button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-<h1>Welcome, {{ current_user }}!</h1>
- <form method="POST" enctype="multipart/form-data" action ="{% url 'profileuploadurl' %}">
-    {% csrf_token %}
+<div class="container">
+    <h1> {{ current_user }}</h1>
 
-<!--   <label for="{{ form.profile_picture.id_for_label }}">{{ form.profile_picture.label }}</label>-->
-<!--    {{ form.profile_picture }}-->
-     {{ form.as_p }}
-    <button type="submit">Upload</button>
-</form>
 
- {{ msg }}
- <div class="search-bar">
-     <form method="POST"  action ="{% url 'searchurl' %}">
-             {% csrf_token %}
+    {% if profile_picture %}
+    <div class="profile-picture">
+        <h2>Your Profile Picture:</h2>
+        <img src="{{ profile_picture.url }}" alt="Profile Picture" style="width: 150px; height: auto;">
+    </div>
+    {% else %}
+    <p>No profile picture uploaded.</p>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" action="{% url 'profileuploadurl' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
+
+    <p>{{ msg }}</p>
+
+    <div class="search-bar">
+        <form method="POST" action="{% url 'searchurl' %}">
+            {% csrf_token %}
             <input type="text" id="userSearch" name="searchname" placeholder="Search for users...">
-    <button type="submit">search</button>
-</form>
-
-<p>{{username}}</p>
-<p>{{users}}</p>
-
-
-
-
-
-
+            <button type="submit">Search</button>
+        </form>
+        <button onclick="window.location.href='{% url 'displayurl' %}'">Show All Usernames</button>
     </div>
 
-<br>
- <p><a href="{% url 'logouturl' %}">Logout</a></p>
-</br>
 
+    <p>{{username}}</p>
+     {% if profile_picture1 %}
+      <img src="{{ profile_picture1.url }}" alt="Profile Picture" style="width: 150px; height: auto;">
+        <button type="button">Chat</button>
+     {% else %}
+    <p>No profile picture uploaded.</p>
+        <button type="button">Chat</button>
+     {% endif %}
+
+    <ul class="user-list">
+    {% for i in users %}
+    <li>
+        {{ i.username }}
+        {% if i.profile_picture %}
+            <img src="{{ i.profile_picture.url }}" alt="Profile Picture" style="width: 150px; height: auto;">
+        {% else %}
+            <p>No profile picture available</p>
+        {% endif %}
+        <button type="button">Chat</button>
+    </li>
+    {% endfor %}
+</ul>
+
+
+    <br>
+    <p><a href="{% url 'logouturl' %}">Logout</a></p>
+</div>
 </body>
 </html>
-
-
-

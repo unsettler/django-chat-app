@@ -15,12 +15,12 @@ class loginform(forms.Form):
     )
 
 
-# class Profilepictureform(forms.ModelForm):
-#     profile_picture = forms.ImageField(required=False)
-#
-#     class Meta:
-#         model = CustomUsercreated
-#         fields = ['profile_picture']
+class Profilepictureform(forms.ModelForm):
+    profile_picture = forms.ImageField(required=False)
+
+    class Meta:
+        model = CustomUsercreated
+        fields = ['profile_picture']
 
 
 class CustomUserCreationForm(UserCreationForm):

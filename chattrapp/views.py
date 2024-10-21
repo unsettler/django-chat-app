@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import loginform
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-# from .forms import Profilepictureform
+from .forms import Profilepictureform
 from .forms import CustomUserCreationForm
 from .models import CustomUsercreated
 from django.contrib.auth import get_user_model
@@ -14,13 +14,14 @@ User = get_user_model()
 
 @login_required()
 def home_view(request):
-    return render(request, "homehtml.html", {'current_user': request.user.username})
+    return render(request, "homehtml.html", {'current_user': request.user.username,"profile_picture":request.user.profile_picture})
 
 
 def login_view(request):
+
     if request.user.is_authenticated:
         return redirect("homeurl")
-
+    form1 = loginform()
     if request.method == "POST":
         form1 = loginform(request.POST)
 
@@ -87,19 +88,19 @@ def resetPassword_view(request):
 
 
 def profileupload_view(request):
+    form = Profilepictureform(instance=request.user)
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST, request.FILES, instance=request.user)
+        form = Profilepictureform(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             # user = request.user  # Get the currently logged-in user
             # user.profile_picture = form.cleaned_data['profile_picture']
             # user.save()  # Save the user instance with the new image
             form.save()
-            return render(request, 'homehtml.html', {'msg': "upload succesfull"})
+            return render(request, 'homehtml.html', {'form': form,'msg': "upload succesfull",'current_user': request.user.username,"profile_picture":request.user.profile_picture})
         else:
-            form = CustomUserCreationForm(instance=request.user)
-            return render(request, 'homehtml.html', {'form': form, "msg": "invalid details"})
-    form = CustomUserCreationForm(instance=request.user)
-    return render(request, 'homehtml.html', {'form': form, "msg": "post failed"})
+            # form = Profilepictureform(instance=request.user)
+            return render(request, 'homehtml.html', {'form': form, "msg": "invalid details",'current_user': request.user.username})
+    return render(request, 'homehtml.html', {'form': form, "msg": "post failed",'current_user': request.user.username})
 
 
 def search_view(request):
@@ -108,13 +109,13 @@ def search_view(request):
         searchedusername = request.POST.get('searchname')
         userreturned = User.objects.filter(username=searchedusername)
         if userreturned.exists():
-            return render(request, 'homehtml.html', {"username ": userreturned.first().username})
+            return render(request, 'homehtml.html', {"username": userreturned.first().username,'current_user': request.user.username,"profile_picture":request.user.profile_picture, "profile_picture1": userreturned.first().profile_picture})
         else:
-            return display(request)
+            return render(request, 'homehtml.html', {"msg": "No records found",'current_user': request.user.username,"profile_picture":request.user.profile_picture})
     else:
-        return render(request, 'homehtml.html', {"msg": "No records found"})
+        return render(request, 'homehtml.html', {"msg": "post method failed",'current_user': request.user.username,"profile_picture":request.user.profile_picture})
 
 
-def display(request):
+def display_view(request):
     users = CustomUsercreated.objects.all()
-    return render(request, "homehtml.html", {'users': users})
+    return render(request, "homehtml.html", {'users': users,'current_user': request.user.username,"profile_picture":request.user.profile_picture})
