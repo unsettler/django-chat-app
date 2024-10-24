@@ -1,0 +1,110 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>deleteuser</title>
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("{% static 'images/loginbg.jpg' %}");
+            background-size: cover; /* Cover the entire screen */
+            background-position: center; /* Center the background image */
+            text-align: center;
+            height: 100vh; /* Full height of the viewport */
+            margin: 0; /* Remove default margin */
+        }
+
+          h1 {
+        color: white;
+        }
+
+        form {
+            display: flex; /* Use flexbox for better alignment */
+            flex-direction: column; /* Align children in a column */
+            align-items: center; /* Center items horizontally */
+            justify-content: center; /* Center items vertically if height is set */
+            background-color: rgba(255, 255, 255, 0.3); /* Semi-transparent white */
+            padding: 40px; /* Space inside the container */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            max-width: 400px; /* Max width for responsiveness */
+            margin: 50px auto; /* Center the container horizontally with auto margins */
+        }
+
+        .form-inputs {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: inline-block;
+            margin: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            margin-top: 15px;
+            color: red;
+        }
+    </style>
+
+</head>
+<body>
+    <form action="{% url 'deleteurl' %}"method="POST">
+                {% csrf_token %}
+
+        <!-- Username input field -->
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="usernametodelete" required>
+        <br><br>
+
+        <!-- Password input field -->
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="passwordofuser" required>
+        <br><br>
+
+        <!-- Submit button -->
+        <button type="submit">delete</button>
+
+        {{msg}}
+    </form>
+ <p><a href="{% url 'homeurl' %}">back to home</a></p>
+</body>
+</html>

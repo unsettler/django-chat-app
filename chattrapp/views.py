@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -6,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .forms import Profilepictureform
 from .forms import CustomUserCreationForm
-from .models import CustomUsercreated
+from .models import CustomUsercreated, Message
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -14,11 +15,11 @@ User = get_user_model()
 
 @login_required()
 def home_view(request):
-    return render(request, "homehtml.html", {'current_user': request.user.username,"profile_picture":request.user.profile_picture})
+    return render(request, "homehtml.html",
+                  {'current_user': request.user.username, "profile_picture": request.user.profile_picture})
 
 
 def login_view(request):
-
     if request.user.is_authenticated:
         return redirect("homeurl")
     form1 = loginform()
@@ -96,11 +97,14 @@ def profileupload_view(request):
             # user.profile_picture = form.cleaned_data['profile_picture']
             # user.save()  # Save the user instance with the new image
             form.save()
-            return render(request, 'homehtml.html', {'form': form,'msg': "upload succesfull",'current_user': request.user.username,"profile_picture":request.user.profile_picture})
+            return render(request, 'homehtml.html',
+                          {'form': form, 'msg': "upload succesfull", 'current_user': request.user.username,
+                           "profile_picture": request.user.profile_picture})
         else:
             # form = Profilepictureform(instance=request.user)
-            return render(request, 'homehtml.html', {'form': form, "msg": "invalid details",'current_user': request.user.username})
-    return render(request, 'homehtml.html', {'form': form, "msg": "post failed",'current_user': request.user.username})
+            return render(request, 'homehtml.html',
+                          {'form': form, "msg": "invalid details", 'current_user': request.user.username})
+    return render(request, 'homehtml.html', {'form': form, "msg": "post failed", 'current_user': request.user.username})
 
 
 def search_view(request):
@@ -108,14 +112,63 @@ def search_view(request):
 
         searchedusername = request.POST.get('searchname')
         userreturned = User.objects.filter(username=searchedusername)
+        show_search_result = True
         if userreturned.exists():
-            return render(request, 'homehtml.html', {"username": userreturned.first().username,'current_user': request.user.username,"profile_picture":request.user.profile_picture, "profile_picture1": userreturned.first().profile_picture})
+            return render(request, 'homehtml.html',
+                          {"username3": userreturned.first().username, 'current_user': request.user.username,
+                           "profile_picture": request.user.profile_picture,
+                           "profile_picture1": userreturned.first().profile_picture,
+                           'show_search_result': show_search_result,
+                           "userid": userreturned.first().id})
         else:
-            return render(request, 'homehtml.html', {"msg": "No records found",'current_user': request.user.username,"profile_picture":request.user.profile_picture})
+            return render(request, 'homehtml.html', {"msg": "No records found", 'current_user': request.user.username,
+                                                     "profile_picture": request.user.profile_picture})
     else:
-        return render(request, 'homehtml.html', {"msg": "post method failed",'current_user': request.user.username,"profile_picture":request.user.profile_picture})
+        return render(request, 'homehtml.html', {"msg": "post method failed", 'current_user': request.user.username,
+                                                 "profile_picture": request.user.profile_picture})
 
 
 def display_view(request):
     users = CustomUsercreated.objects.all()
-    return render(request, "homehtml.html", {'users': users,'current_user': request.user.username,"profile_picture":request.user.profile_picture})
+    return render(request, "homehtml.html", {'users': users, 'current_user': request.user.username,
+                                             "profile_picture": request.user.profile_picture})
+
+
+def chat_view(request, recipient_id):
+    recipient = User.objects.get(id=recipient_id)
+    messages = Message.objects.filter(
+        (Q(sender=request.user) & Q(receiver=recipient)) |
+        (Q(sender=recipient) & Q(receiver=request.user))
+    ).order_by('timestamp')
+
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        Message.objects.create(sender=request.user, receiver=recipient, content=content)
+        return redirect('chaturl', recipient_id=recipient_id)
+    # else:
+    #     messages.error(request, "Message content cannot be empty.")
+
+    return render(request, 'chatroom.html', {'recipient': recipient, 'messages': messages})
+
+
+def delete_view(request):
+    if request.method == "POST":
+        uname = request.POST["usernametodelete"]
+        pword = request.POST["passwordofuser"]
+
+        try:
+            # First, authenticate the user by their username and password
+            user = authenticate(username=uname, password=pword)
+
+            if user is not None:
+                # If the user is authenticated, delete the user
+                user.delete()
+                return redirect("loginurl")
+            else:
+                # If authentication fails, provide a message
+                return render(request, "deleteuser.html", {"msg": "Incorrect username or password."})
+        except Exception as e:
+            print(e)
+            return render(request, "deleteuser.html", {"msg": "An error occurred while trying to delete the user."})
+
+    return render(request, "deleteuser.html")

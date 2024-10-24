@@ -10,5 +10,7 @@ urlpatterns = [
     path('toreset', views.toreset_view, name="toreseturl"),
     path('profileupload', views.profileupload_view, name="profileuploadurl"),
     path('search', views.search_view, name="searchurl"),
-    path('display', views.display_view, name="displayurl")
+    path('display', views.display_view, name="displayurl"),
+    path('chatroom/<int:recipient_id>/', views.chat_view, name='chaturl'),
+    path('deleteuser', views.delete_view, name='deleteurl'),
 ]

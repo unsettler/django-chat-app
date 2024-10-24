@@ -85,6 +85,8 @@
         .profile-picture img {
             border-radius: 50%;
             border: 2px solid #ddd;
+            width: 150px;
+            height: 150px; /* Make sure all profile pictures are the same size */
         }
 
         .user-list {
@@ -99,10 +101,22 @@
             background-color: #f8f9fa;
             border: 1px solid #ddd;
             border-radius: 5px;
+            display: flex;
+            align-items: center; /* Align content vertically */
+            justify-content: space-between; /* Space between the username and chat button */
+        }
+
+        .user-list img {
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            width: 50px;
+            height: 50px; /* Make sure all profile pictures are the same size */
         }
 
         .user-list button {
-            float: right;
+            width: 70px; /* Make the chat button smaller */
+            padding: 5px;
+            font-size: 14px;
             background-color: #007bff;
         }
 
@@ -125,11 +139,10 @@
 <div class="container">
     <h1> {{ current_user }}</h1>
 
-
     {% if profile_picture %}
     <div class="profile-picture">
         <h2>Your Profile Picture:</h2>
-        <img src="{{ profile_picture.url }}" alt="Profile Picture" style="width: 150px; height: auto;">
+        <img src="{{ profile_picture.url }}" alt="Profile Picture">
     </div>
     {% else %}
     <p>No profile picture uploaded.</p>
@@ -149,36 +162,51 @@
             <input type="text" id="userSearch" name="searchname" placeholder="Search for users...">
             <button type="submit">Search</button>
         </form>
-        <button onclick="window.location.href='{% url 'displayurl' %}'">Show All Usernames</button>
+        <button onclick="window.location.href='{% url 'displayurl' %}'">Show All Users</button>
     </div>
 
+{% if show_search_result %}
+    <p>{{ username3 }}</p>
+    {% if profile_picture1 %}
+        <img src="{{ profile_picture1.url }}" alt="Profile Picture" style="width: 150px; height: auto;">
+    {% else %}
+        <p>No profile picture uploaded.</p>
+    {% endif %}
 
-    <p>{{username}}</p>
-     {% if profile_picture1 %}
-      <img src="{{ profile_picture1.url }}" alt="Profile Picture" style="width: 150px; height: auto;">
+    <a href="{% url 'chaturl' userid %}">
         <button type="button">Chat</button>
-     {% else %}
-    <p>No profile picture uploaded.</p>
-        <button type="button">Chat</button>
-     {% endif %}
+    </a>
+{% endif %}
+
+
+
+
+
+
+
+
+
 
     <ul class="user-list">
-    {% for i in users %}
-    <li>
-        {{ i.username }}
-        {% if i.profile_picture %}
-            <img src="{{ i.profile_picture.url }}" alt="Profile Picture" style="width: 150px; height: auto;">
-        {% else %}
-            <p>No profile picture available</p>
-        {% endif %}
-        <button type="button">Chat</button>
-    </li>
-    {% endfor %}
-</ul>
+        {% for i in users %}
+        <li>
 
+            {% if i.profile_picture %}
+                <img src="{{ i.profile_picture.url }}" alt="Profile Picture">
+            {% else %}
+                <p>No profile picture available</p>
+            {% endif %}
+             <span>{{ i.username }}</span>
+            <a href="{% url 'chaturl' i.id %}">
+                <button type="button">Chat</button>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
 
     <br>
     <p><a href="{% url 'logouturl' %}">Logout</a></p>
+    <p><a href="{% url 'deleteurl' %}">deleteuser</a></p>
 </div>
 </body>
 </html>
