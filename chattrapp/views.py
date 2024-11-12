@@ -1,14 +1,15 @@
-from django.db.models import Q
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from .forms import loginform
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from .forms import Profilepictureform
 from .forms import CustomUserCreationForm
 from .models import CustomUsercreated, Message
-from django.contrib.auth import get_user_model
+from .models import Message
+from django.db.models import Q
 
 User = get_user_model()
 
@@ -134,23 +135,6 @@ def display_view(request):
                                              "profile_picture": request.user.profile_picture})
 
 
-def chat_view(request, recipient_id):
-    recipient = User.objects.get(id=recipient_id)
-    messages = Message.objects.filter(
-        (Q(sender=request.user) & Q(receiver=recipient)) |
-        (Q(sender=recipient) & Q(receiver=request.user))
-    ).order_by('timestamp')
-
-    if request.method == 'POST':
-        content = request.POST.get('content')
-        Message.objects.create(sender=request.user, receiver=recipient, content=content)
-        return redirect('chaturl', recipient_id=recipient_id)
-    # else:
-    #     messages.error(request, "Message content cannot be empty.")
-
-    return render(request, 'chatroom.html', {'recipient': recipient, 'messages': messages})
-
-
 def delete_view(request):
     if request.method == "POST":
         uname = request.POST["usernametodelete"]
@@ -172,3 +156,18 @@ def delete_view(request):
             return render(request, "deleteuser.html", {"msg": "An error occurred while trying to delete the user."})
 
     return render(request, "deleteuser.html")
+
+
+def chat_view(request, recipient_id):
+    recipient = User.objects.get(id=recipient_id)
+    messages = Message.objects.filter(
+        (Q(sender=request.user.id) & Q(receiver=recipient)) |
+        (Q(sender=recipient) & Q(receiver=request.user.id))
+    ).order_by('timestamp')
+
+    return render(request, 'chatroom.html',
+                  {'recipient': recipient,
+                   'messages': messages,
+                   'room_name': f"{min(request.user.id,recipient_id)}_{max(request.user.id,recipient_id)}",
+                   "recipient_id": recipient_id,
+                   "userid": request.user.id})

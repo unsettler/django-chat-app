@@ -84,12 +84,80 @@
             </div>
         {% endfor %}
     </div>
-    <form method="post">
-        {% csrf_token %}
-        <textarea name="content" placeholder="Type your message" required></textarea>
-        <button type="submit">Send</button>
-    </form>
 
-<a href="{% url 'homeurl' %}">go to home</a>
+    <form id="chat-form" >
+    <input type="text" id="message-input" autocomplete="off" aria-label="Message">
+    <button type="submit">Send</button>
+</form>
+
+
+    <script>
+const roomName = "{{ room_name }}";
+const recipientId = "{{ recipient.id }}"; // You may or may not need this, depending on your use case
+const userID = "{{ userid }}";
+console.log('Initializing WebSocket connection for room: ', roomName);
+
+const chatSocket = new WebSocket(
+    `ws://${window.location.host}/ws/chat/${roomName}/`
+);
+
+// Log when the WebSocket connection opens
+chatSocket.onopen = function(e) {
+    console.log('WebSocket connection established.');
+};
+
+// Log errors during WebSocket connection
+chatSocket.onerror = function(e) {
+    console.error('WebSocket error:', e);
+};
+
+// Handle incoming messages
+chatSocket.onmessage = function(e) {
+    console.log('Received message:', e.data);  // Log received message
+    const data = JSON.parse(e.data);
+
+    // Create message element
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message');  // Add class for styling
+    messageElement.innerHTML = `<strong>${data.sender}:</strong> ${data.message}`;
+    document.querySelector('.chat-container').appendChild(messageElement);
+
+    // Auto-scroll to the latest message
+    const chatContainer = document.querySelector('.chat-container');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+};
+
+// Handle form submission (message sending)
+document.querySelector('#chat-form').onsubmit = function(e) {
+    e.preventDefault();
+    const messageInput = document.querySelector('#message-input');
+    const message = messageInput.value;
+
+    console.log('Sending message:', message);  // Log message being sent
+
+    if (message && chatSocket.readyState === WebSocket.OPEN) {
+        console.log('WebSocket is open. Sending message...');
+
+        // Send the message along with sender and recipient IDs
+        chatSocket.send(JSON.stringify({
+            'message': message,  // The message content
+            'sender': userID,    // The sender's user ID
+            'recipient_id': recipientId  // The recipient's user ID
+        }));
+        messageInput.value = '';  // Clear the input field after sending the message
+    } else {
+        console.log('WebSocket is not open, cannot send message.');
+    }
+};
+
+// Log WebSocket readyState for debugging
+setInterval(() => {
+    console.log('Current WebSocket readyState:', chatSocket.readyState);
+}, 5000);  // Log the readyState every 5 seconds
+
+</script>
+
+
+    <a href="{% url 'homeurl' %}">Go to Home</a>
 </body>
 </html>
