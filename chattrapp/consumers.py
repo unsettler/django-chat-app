@@ -61,17 +61,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         sender = CustomUsercreated.objects.get(id=sender_id)
         recipient = CustomUsercreated.objects.get(id=recipient_id)
         Message.objects.create(sender=sender, receiver=recipient, content=message)
-    #
-    #     # Send an email notification to the recipient
-    #     self.send_email_notification(recipient.email, sender.username, message)
-    #
-    # def send_email_notification(self, recipient_email, sender_username, message):
-    #     subject = f"New Message from {sender_username}"
-    #     email_message = f"You have received a new message from {sender_username}: \n\n{message}"
-    #     send_mail(
-    #         subject,
-    #         email_message,
-    #         settings.DEFAULT_FROM_EMAIL,  # Make sure DEFAULT_FROM_EMAIL is set in settings.py
-    #         [recipient_email],
-    #         fail_silently=False,
-    #     )
+
+        # Send an email notification to the recipient
+        self.send_email_notification(recipient.email, sender.username, message)
+
+    def send_email_notification(self, recipient_email, sender_username, message):
+        subject = f"New Message from {sender_username}"
+        email_message = f"You have received a new message from {sender_username}: \n\n{message}"
+        send_mail(
+            subject,
+            email_message,
+            settings.DEFAULT_FROM_EMAIL,  # Make sure DEFAULT_FROM_EMAIL is set in settings.py
+            [recipient_email],
+            fail_silently=False,
+        )

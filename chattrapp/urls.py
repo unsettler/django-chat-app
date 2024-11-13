@@ -13,4 +13,5 @@ urlpatterns = [
     path('display', views.display_view, name="displayurl"),
     path('chat/<int:recipient_id>/', views.chat_view, name='chaturl'),
     path('deleteuser', views.delete_view, name='deleteurl'),
+    path('update', views.update_view, name='updateurl'),
 ]

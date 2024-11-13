@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from .forms import loginform
 from django.contrib.auth.forms import UserCreationForm
 from .forms import Profilepictureform
+from .forms import UserUpdateForm
 from .forms import CustomUserCreationForm
 from .models import CustomUsercreated, Message
 from .models import Message
@@ -50,22 +51,34 @@ def logout_view(request):
 
 def signup_view(request):
     try:
-
         if request.method == "POST":
             signupform = CustomUserCreationForm(request.POST)
             if signupform.is_valid():
                 signupform.save()
                 return redirect("loginurl")
             else:
-                return render(request, "signuphtml.html", {"signformtohtml": signupform, "msg": "invalid details"})
+                # If the form is not valid, capture errors and pass them to the template
+                return render(request, "signuphtml.html", {
+                    "signformtohtml": signupform,
+                    "msg": signupform.errors
+
+                })
 
         else:
             signupform = CustomUserCreationForm()
-            return render(request, "signuphtml.html", {"signformtohtml": signupform, "msg": "post method failed"})
+            return render(request, "signuphtml.html", {
+                "signformtohtml": signupform,
+
+            })
+
     except Exception as e:
         print(e)
         signupform = CustomUserCreationForm()
-    return render(request, "signuphtml.html", {"signformtohtml": signupform, "msg": "raised an error"})
+    return render(request, "signuphtml.html", {
+        "signformtohtml": signupform,
+        "msg": signupform.errors
+        # Pass any errors if an exception occurs
+    })
 
 
 def toreset_view(request):
@@ -168,6 +181,19 @@ def chat_view(request, recipient_id):
     return render(request, 'chatroom.html',
                   {'recipient': recipient,
                    'messages': messages,
-                   'room_name': f"{min(request.user.id,recipient_id)}_{max(request.user.id,recipient_id)}",
+                   'room_name': f"{min(request.user.id, recipient_id)}_{max(request.user.id, recipient_id)}",
                    "recipient_id": recipient_id,
                    "userid": request.user.id})
+
+
+@login_required
+def update_view(request):
+    if request.method == 'POST':
+        form = UserUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('homeurl')  # Redirect to the profile page after successful update
+    else:
+        form = UserUpdateForm(instance=request.user)
+
+    return render(request, 'update.html', {'form': form})

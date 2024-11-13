@@ -24,8 +24,14 @@ class Profilepictureform(forms.ModelForm):
 
 
 class CustomUserCreationForm(UserCreationForm):
-    profile_picture = forms.ImageField(required=False)
+    email = forms.EmailField(required=False, help_text="Enter a valid email address.")
 
     class Meta:
         model = CustomUsercreated
-        fields = ('username', 'password1', 'password2','profile_picture')
+        fields = ('username', 'password1', 'password2', "email")
+
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = CustomUsercreated
+        fields = ['username', 'email']
